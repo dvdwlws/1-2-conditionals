@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conditional Forms: Steve and Sarah's Week</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            background: #f0f0f0;
+            height: 8px;
+            position: relative;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .story-section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        .story-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .story-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .story-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .story-box p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .exercise-box {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .exercise-box h3 {
+            color: #764ba2;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .question {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .option.incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 1em;
+            width: 200px;
+            transition: border 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input[type="text"].correct {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        input[type="text"].incorrect {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .gap-fill {
+            margin: 15px 0;
+            line-height: 2;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+            animation: slideDown 0.3s;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px 0;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .completion {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .completion h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .completion .trophy {
+            font-size: 5em;
+            margin: 20px 0;
+        }
+
+        .navigation-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px 0;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: #667eea;
+            width: 30px;
+            border-radius: 6px;
+        }
+
+        .dot.completed {
+            background: #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+            
+            input[type="text"] {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Conditional Forms Interactive Exercise</h1>
+            <p>Learn First and Second Conditionals with Steve and Sarah</p>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="navigation-dots" id="navigationDots"></div>
+
+        <div class="content">
+            <!-- Section 1: Stories -->
+            <div class="story-section active" id="section0">
+                <h2 style="color: #667eea; margin-bottom: 20px;">📖 Read the Stories</h2>
+                
+                <div class="story-box">
+                    <h3>Steve's Monday Morning</h3>
+                    <p>Steve stands at his bathroom mirror on Monday morning, razor in hand, mentally sorting through the week ahead. If he doesn't figure out a plan now, the days will just blur together like they always do.</p>
+                    <p>If he calls his brother tonight, they'll probably talk for ten minutes about work and the weather. His brother will ask about the car, Steve will ask about the kids, and they'll hang up feeling like they've checked a box. But if he suggests meeting for a beer on Thursday, things might get awkward. Then again, if they actually meet up, they might finally talk about Dad without all the tension.</p>
+                    <p>There's the networking event on Wednesday. If he goes, he'll spend two hours making small talk with strangers and collecting business cards he'll never use. But if he actually follows up with people afterward, one of them might know about better job openings. And if he stays home instead, he'll just wonder whether he missed an opportunity.</p>
+                    <p>If he asks Jennifer from accounting to lunch on Friday, she'll either say yes or she'll say no. If she says yes, they'll discover whether they actually have anything to talk about beyond printer problems. If she says no, he'll feel like an idiot for a few days, but at least he'll stop wondering. If he doesn't ask at all, he'll spend another month crafting perfect scenarios in his head that will never happen.</p>
+                    <p>The garden won't fix itself. If he tackles it on Saturday, his back will hurt on Sunday, but the yard will look decent again. If he ignores it another week, the weeds will take over completely, and if that happens, he'll spend the whole summer avoiding his neighbor's disapproving glances.</p>
+                </div>
+
+                <div class="story-box">
+                    <h3>Sarah's Monday Morning</h3>
+                    <p>Sarah sits at her kitchen table on Monday morning, tea steaming in front of her, gazing out at the gray city skyline. The week stretches ahead, and her mind drifts to all the impossible things she wishes she could do.</p>
+                    <p>If she won the lottery this week, she'd quit her job on Tuesday. She wouldn't even give two weeks' notice—she'd just walk into Martin's office and tell him exactly what she thought about his micromanaging. If she had that kind of money, she'd book a flight to Greece by Wednesday and spend Thursday swimming in impossibly blue water instead of sitting in conference rooms.</p>
+                    <p>If she were braver, she'd dye her hair purple on Tuesday afternoon. If she did that, everyone at work would stare on Wednesday morning, her mother would call with opinions, and she'd finally look like someone interesting. People would ask her questions at the coffee machine. She'd be memorable.</p>
+                    <p>If she had magical powers, she'd snap her fingers on Wednesday and transform her tiny apartment into a sprawling loft with floor-to-ceiling windows. If she lived somewhere like that, she'd host dinner parties on Friday night. She'd be the kind of person who had friends over, who knew how to arrange cheese boards, who laughed easily.</p>
+                    <p>If she were the kind of person who took big risks, she'd submit her photography to that downtown gallery on Thursday. If they loved her work—and in this impossible scenario, they would—the opening would be Saturday night. She'd wear something stunning, drink champagne, tell people she was a photographer, not an accountant.</p>
+                </div>
+
+                <div class="buttons">
+                    <button class="btn-primary" onclick="nextSection()">Start Exercises →</button>
+                </div>
+            </div>
+
+            <!-- Section 1: Meaning Focus -->
+            <div class="story-section" id="section1">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Exercise 1: Meaning Focus</h2>
+                
+                <div class="exercise-box">
+                    <h3>Understanding the Difference</h3>
+                    
+                    <div class="question">
+                        <div class="question-text">1. Does Steve believe his plans might actually happen?</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'yes')">Yes - these are real possibilities</div>
+                            <div class="option" onclick="selectOption(this, 'no')">No - these are just dreams</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">2. Does Sarah believe her ideas will happen?</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'yes')">Yes - these are real possibilities</div>
+                            <div class="option" onclick="selectOption(this, 'no')">No - these are unlikely or impossible</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">3. What tense does Steve use after "if"?</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'present')">Present simple (calls, goes, asks)</div>
+                            <div class="option" onclick="selectOption(this, 'past')">Past simple (won, were, had)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">4. What tense does Sarah use after "if"?</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'present')">Present simple (calls, goes, asks)</div>
+                            <div class="option" onclick="selectOption(this, 'past')">Past simple (won, were, had)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">5. Why does Sarah use past tense to talk about the future?</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'mistake')">It's a mistake - she should use present</div>
+                            <div class="option" onclick="selectOption(this, 'unreal')">Past tense shows the situation is unreal or unlikely</div>
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback1"></div>
+                    
+                    <div class="buttons">
+                        <button class="btn-secondary" onclick="prevSection()">← Back</button>
+                        <button class="btn-primary" onclick="checkAnswers1()">Check Answers</button>
+                        <button class="btn-success" onclick="nextSection()" style="display:none;" id="next1">Next Exercise →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Steve or Sarah -->
+            <div class="story-section" id="section2">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Exercise 2: Steve or Sarah?</h2>
+                
+                <div class="exercise-box">
+                    <h3>Who would think this?</h3>
+                    <p style="margin-bottom: 20px;">Decide if these sentences sound more like <strong>Steve's thinking</strong> (realistic) or <strong>Sarah's thinking</strong> (unlikely/imaginary).</p>
+                    
+                    <div class="question">
+                        <div class="question-text">1. "If I study hard tonight, I'll pass the test tomorrow."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">2. "If I had superpowers, I'd fly to work."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">3. "If the weather is nice on Saturday, we'll go to the beach."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">4. "If I were the president, I'd change everything."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">5. "If I leave now, I'll catch the 6 o'clock train."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">6. "If I won a million euros, I'd never work again."</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'steve')">Steve (realistic possibility)</div>
+                            <div class="option" onclick="selectOption(this, 'sarah')">Sarah (unlikely dream)</div>
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback2"></div>
+                    
+                    <div class="buttons">
+                        <button class="btn-secondary" onclick="prevSection()">← Back</button>
+                        <button class="btn-primary" onclick="checkAnswers2()">Check Answers</button>
+                        <button class="btn-success" onclick="nextSection()" style="display:none;" id="next2">Next Exercise →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Real or Imaginary -->
+            <div class="story-section" id="section3">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Exercise 3: Real or Imaginary?</h2>
+                
+                <div class="exercise-box">
+                    <h3>Choose the Correct Form</h3>
+                    <p style="margin-bottom: 20px;">Decide if each situation is a <strong>real possibility</strong> (First Conditional) or <strong>imaginary/unlikely</strong> (Second Conditional), then complete the sentence.</p>
+                    
+                    <div class="question">
+                        <div class="question-text">1. I might see Tom tomorrow.</div>
+                        <div class="gap-fill">
+                            If I <input type="text" id="q3_1a" placeholder="verb"> him, I <input type="text" id="q3_1b" placeholder="verb"> him about the party.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">2. I don't have a car and can't afford one.</div>
+                        <div class="gap-fill">
+                            But if I <input type="text" id="q3_2a" placeholder="verb"> a car, I <input type="text" id="q3_2b" placeholder="verb"> to work every day.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">3. It might rain later.</div>
+                        <div class="gap-fill">
+                            If it <input type="text" id="q3_3a" placeholder="verb">, we <input type="text" id="q3_3b" placeholder="verb"> inside.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">4. I'm not a millionaire.</div>
+                        <div class="gap-fill">
+                            But if I <input type="text" id="q3_4a" placeholder="verb"> rich, I <input type="text" id="q3_4b" placeholder="verb"> a house by the beach.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">5. I might go to the gym this evening.</div>
+                        <div class="gap-fill">
+                            If I <input type="text" id="q3_5a" placeholder="verb">, I <input type="text" id="q3_5b" placeholder="verb"> better tomorrow.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">6. I can't speak Japanese.</div>
+                        <div class="gap-fill">
+                            If I <input type="text" id="q3_6a" placeholder="verb"> Japanese, I <input type="text" id="q3_6b" placeholder="verb"> to Tokyo.
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback3"></div>
+                    
+                    <div class="buttons">
+                        <button class="btn-secondary" onclick="prevSection()">← Back</button>
+                        <button class="btn-primary" onclick="checkAnswers3()">Check Answers</button>
+                        <button class="btn-success" onclick="nextSection()" style="display:none;" id="next3">Next Exercise →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Gap Fill Mixed -->
+            <div class="story-section" id="section4">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Exercise 4: Gap Fill - Mixed Conditionals</h2>
+                
+                <div class="exercise-box">
+                    <h3>Complete the Sentences from the Stories</h3>
+                    
+                    <div class="question">
+                        <div class="question-text"><strong>Steve's Story:</strong></div>
+                        <div class="gap-fill">
+                            1. If he <input type="text" id="q4_1" placeholder="ask"> Jennifer to lunch on Friday, she'll either say yes or no.
+                        </div>
+                        <div class="gap-fill">
+                            2. If he <input type="text" id="q4_2" placeholder="tackle"> the garden on Saturday, his back will hurt on Sunday.
+                        </div>
+                        <div class="gap-fill">
+                            3. If he <input type="text" id="q4_3" placeholder="not make"> one decision today, next Monday will feel exactly like this one.
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text"><strong>Sarah's Story:</strong></div>
+                        <div class="gap-fill">
+                            4. If she <input type="text" id="q4_4" placeholder="have"> that kind of money, she'd book a flight to Greece.
+                        </div>
+                        <div class="gap-fill">
+                            5. If time <input type="text" id="q4_5" placeholder="not matter">, she'd spend the entire week in bed reading.
+                        </div>
+                        <div class="gap-fill">
+                            6. If she <input type="text" id="q4_6" placeholder="be"> someone else, everything would be different.
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback4"></div>
+                    
+                    <div class="buttons">
+                        <button class="btn-secondary" onclick="prevSection()">← Back</button>
+                        <button class="btn-primary" onclick="checkAnswers4()">Check Answers</button>
+                        <button class="btn-success" onclick="nextSection()" style="display:none;" id="next4">Next Exercise →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Error Correction -->
+            <div class="story-section" id="section5">
+                <h2 style="color: #667eea; margin-bottom: 20px;">Exercise 5: Error Correction</h2>
+                
+                <div class="exercise-box">
+                    <h3>Find and Correct the Mistakes</h3>
+                    <p style="margin-bottom: 20px;">Each sentence has ONE mistake. Can you find it?</p>
+                    
+                    <div class="question">
+                        <div class="question-text">1. If I will see him tomorrow, I'll tell him the news.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'will')">Remove "will" → If I see him tomorrow...</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">2. If I would have more time, I would learn guitar.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'had')">Change "would have" to "had" → If I had more time...</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">3. If she won the lottery, she will travel the world.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'would')">Change "will" to "would" → ...she would travel...</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">4. If he goes to the party, he would meet new people.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'will')">Change "would" to "will" → ...he will meet...</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">5. If I am rich, I'd buy a yacht.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'were')">Change "am" to "were" or "was" → If I were rich...</div>
+                        </div>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text">6. If it will rain tomorrow, we'll stay home.</div>
+                        <div class="options">
+                            <div class="option" onclick="selectOption(this, 'correct')">This sentence is correct</div>
+                            <div class="option" onclick="selectOption(this, 'rains')">Remove "will" → If it rains tomorrow...</div>
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback5"></div>
+                    
+                    <div class="buttons">
+                        <button class="btn-secondary" onclick="prevSection()">← Back</button>
+                        <button class="btn-primary" onclick="checkAnswers5()">Check Answers</button>
+                        <button class="btn-success" onclick="nextSection()" style="display:none;" id="next5">Finish! 🎉</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completion Section -->
+            <div class="story-section" id="section6">
+                <div class="completion">
+                    <div class="trophy">🏆</div>
+                    <h2>Congratulations!</h2>
+                    <p style="font-size: 1.2em; margin: 20px 0;">You've completed all the exercises!</p>
+                    <div class="score" id="finalScore"></div>
+                    <p style="margin: 20px 0; color: #666;">You now understand the difference between First and Second Conditionals:</p>
+                    <div style="text-align: left; max-width: 600px; margin: 20px auto; background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                        <p style="margin: 10px 0;"><strong>First Conditional (Steve):</strong> Real possibilities in the future</p>
+                        <p style="margin: 10px 0; color: #667eea;">If + present simple, will + base verb</p>
+                        <p style="margin: 10px 0;"><strong>Second Conditional (Sarah):</strong> Unlikely or imaginary situations</p>
+                        <p style="margin: 10px 0; color: #764ba2;">If + past simple, would + base verb</p>
+                    </div>
+                    <div class="buttons">
+                        <button class="btn-primary" onclick="restartExercise()">Start Over 🔄</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        const totalSections = 7;
+        let scores = {
+            section1: 0,
+            section2: 0,
+            section3: 0,
+            section4: 0,
+            section5: 0
+        };
+
+        // Exercise 1 Answers
+        const answers1 = {
+            q1: 'yes',
+            q2: 'no',
+            q3: 'present',
+            q4: 'past',
+            q5: 'unreal'
+        };
+
+        // Exercise 2 Answers
+        const answers2 = {
+            q1: 'steve',
+            q2: 'sarah',
+            q3: 'steve',
+            q4: 'sarah',
+            q5: 'steve',
+            q6: 'sarah'
+        };
+
+        // Exercise 3 Answers
+        const answers3 = {
+            q3_1a: ['see'],
+            q3_1b: ['will tell', "'ll tell"],
+            q3_2a: ['had'],
+            q3_2b: ['would drive', "'d drive"],
+            q3_3a: ['rains'],
+            q3_3b: ['will stay', "'ll stay"],
+            q3_4a: ['were', 'was'],
+            q3_4b: ['would buy', "'d buy"],
+            q3_5a: ['go'],
+            q3_5b: ['will feel', "'ll feel"],
+            q3_6a: ['spoke', 'could speak'],
+            q3_6b: ['would move', "'d move"]
+        };
+
+        // Exercise 4 Answers
+        const answers4 = {
+            q4_1: ['asks'],
+            q4_2: ['tackles'],
+            q4_3: ["doesn't make", 'does not make'],
+            q4_4: ['had'],
+            q4_5: ["didn't matter", 'did not matter'],
+            q4_6: ['were', 'was']
+        };
+
+        // Exercise 5 Answers
+        const answers5 = {
+            q1: 'will',
+            q2: 'had',
+            q3: 'would',
+            q4: 'will',
+            q5: 'were',
+            q6: 'rains'
+        };
+
+        function updateProgress() {
+            const progress = (currentSection / (totalSections - 1)) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            updateNavigationDots();
+        }
+
+        function updateNavigationDots() {
+            const dotsContainer = document.getElementById('navigationDots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalSections; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i === currentSection) {
+                    dot.classList.add('active');
+                } else if (i < currentSection) {
+                    dot.classList.add('completed');
+                }
+                dotsContainer.appendChild(dot);
+            }
+        }
+
+        function nextSection() {
+            document.getElementById('section' + currentSection).classList.remove('active');
+            currentSection++;
+            document.getElementById('section' + currentSection).classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function prevSection() {
+            document.getElementById('section' + currentSection).classList.remove('active');
+            currentSection--;
+            document.getElementById('section' + currentSection).classList.add('active');
+            updateProgress();
+            window.scrollTo(0, 0);
+        }
+
+        function selectOption(element, value) {
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            element.setAttribute('data-value', value);
+        }
+
+        function checkAnswers1() {
+            const questions = document.querySelectorAll('#section1 .question');
+            let correct = 0;
+            let answered = 0;
+
+            questions.forEach((q, index) => {
+                const selected = q.querySelector('.option.selected');
+                if (selected) {
+                    answered++;
+                    const value = selected.getAttribute('data-value');
+                    const correctAnswer = answers1['q' + (index + 1)];
+                    
+                    if (value === correctAnswer) {
+                        selected.classList.add('correct');
+                        correct++;
+                    } else {
+                        selected.classList.add('incorrect');
+                        // Show correct answer
+                        q.querySelectorAll('.option').forEach(opt => {
+                            if (opt.getAttribute('data-value') === correctAnswer) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+                }
+            });
+
+            const feedback = document.getElementById('feedback1');
+            if (answered < questions.length) {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = '⚠️ Please answer all questions!';
+            } else {
+                scores.section1 = correct;
+                feedback.className = 'feedback ' + (correct === questions.length ? 'correct' : 'incorrect') + ' show';
+                feedback.innerHTML = `✓ You got ${correct} out of ${questions.length} correct!`;
+                document.getElementById('next1').style.display = 'inline-block';
+            }
+        }
+
+        function checkAnswers2() {
+            const questions = document.querySelectorAll('#section2 .question');
+            let correct = 0;
+            let answered = 0;
+
+            questions.forEach((q, index) => {
+                const selected = q.querySelector('.option.selected');
+                if (selected) {
+                    answered++;
+                    const value = selected.getAttribute('data-value');
+                    const correctAnswer = answers2['q' + (index + 1)];
+                    
+                    if (value === correctAnswer) {
+                        selected.classList.add('correct');
+                        correct++;
+                    } else {
+                        selected.classList.add('incorrect');
+                        q.querySelectorAll('.option').forEach(opt => {
+                            if (opt.getAttribute('data-value') === correctAnswer) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+                }
+            });
+
+            const feedback = document.getElementById('feedback2');
+            if (answered < questions.length) {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = '⚠️ Please answer all questions!';
+            } else {
+                scores.section2 = correct;
+                feedback.className = 'feedback ' + (correct === questions.length ? 'correct' : 'incorrect') + ' show';
+                feedback.innerHTML = `✓ You got ${correct} out of ${questions.length} correct!`;
+                document.getElementById('next2').style.display = 'inline-block';
+            }
+        }
+
+        function checkAnswers3() {
+            let correct = 0;
+            let total = 12;
+            let allFilled = true;
+
+            for (let key in answers3) {
+                const input = document.getElementById(key);
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswers = answers3[key];
+                
+                if (userAnswer === '') {
+                    allFilled = false;
+                    continue;
+                }
+                
+                const isCorrect = correctAnswers.some(ans => userAnswer === ans.toLowerCase());
+                
+                if (isCorrect) {
+                    input.classList.remove('incorrect');
+                    input.classList.add('correct');
+                    correct++;
+                } else {
+                    input.classList.remove('correct');
+                    input.classList.add('incorrect');
+                }
+            }
+
+            const feedback = document.getElementById('feedback3');
+            if (!allFilled) {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = '⚠️ Please fill in all gaps!';
+            } else {
+                scores.section3 = correct;
+                feedback.className = 'feedback ' + (correct === total ? 'correct' : 'incorrect') + ' show';
+                feedback.innerHTML = `✓ You got ${correct} out of ${total} correct!`;
+                document.getElementById('next3').style.display = 'inline-block';
+            }
+        }
+
+        function checkAnswers4() {
+            let correct = 0;
+            let total = 6;
+            let allFilled = true;
+
+            for (let key in answers4) {
+                const input = document.getElementById(key);
+                const userAnswer = input.value.trim().toLowerCase();
+                const correctAnswers = answers4[key];
+                
+                if (userAnswer === '') {
+                    allFilled = false;
+                    continue;
+                }
+                
+                const isCorrect = correctAnswers.some(ans => userAnswer === ans.toLowerCase());
+                
+                if (isCorrect) {
+                    input.classList.remove('incorrect');
+                    input.classList.add('correct');
+                    correct++;
+                } else {
+                    input.classList.remove('correct');
+                    input.classList.add('incorrect');
+                }
+            }
+
+            const feedback = document.getElementById('feedback4');
+            if (!allFilled) {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = '⚠️ Please fill in all gaps!';
+            } else {
+                scores.section4 = correct;
+                feedback.className = 'feedback ' + (correct === total ? 'correct' : 'incorrect') + ' show';
+                feedback.innerHTML = `✓ You got ${correct} out of ${total} correct!`;
+                document.getElementById('next4').style.display = 'inline-block';
+            }
+        }
+
+        function checkAnswers5() {
+            const questions = document.querySelectorAll('#section5 .question');
+            let correct = 0;
+            let answered = 0;
+
+            questions.forEach((q, index) => {
+                const selected = q.querySelector('.option.selected');
+                if (selected) {
+                    answered++;
+                    const value = selected.getAttribute('data-value');
+                    const correctAnswer = answers5['q' + (index + 1)];
+                    
+                    if (value === correctAnswer) {
+                        selected.classList.add('correct');
+                        correct++;
+                    } else {
+                        selected.classList.add('incorrect');
+                        q.querySelectorAll('.option').forEach(opt => {
+                            if (opt.getAttribute('data-value') === correctAnswer) {
+                                opt.classList.add('correct');
+                            }
+                        });
+                    }
+                }
+            });
+
+            const feedback = document.getElementById('feedback5');
+            if (answered < questions.length) {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = '⚠️ Please answer all questions!';
+            } else {
+                scores.section5 = correct;
+                feedback.className = 'feedback ' + (correct === questions.length ? 'correct' : 'incorrect') + ' show';
+                feedback.innerHTML = `✓ You got ${correct} out of ${questions.length} correct!`;
+                document.getElementById('next5').style.display = 'inline-block';
+                
+                // Calculate final score
+                const totalScore = scores.section1 + scores.section2 + scores.section3 + scores.section4 + scores.section5;
+                const maxScore = 5 + 6 + 12 + 6 + 6; // Total possible points
+                document.getElementById('finalScore').innerHTML = `Your final score: ${totalScore} / ${maxScore} (${Math.round((totalScore/maxScore)*100)}%)`;
+            }
+        }
+
+        function restartExercise() {
+            location.reload();
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
